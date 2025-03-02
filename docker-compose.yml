@@ -1,0 +1,47 @@
+services:
+  db:
+    image: postgres:13
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: classmanagement
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - PrviNetwork
+  cloudbeaver:
+    image: dbeaver/cloudbeaver
+    container_name: cloudbeaver
+    restart: always
+    ports:
+      - "8978:8978"
+    volumes:
+      - cloudbeaver-data:/opt/cloudbeaver/workspace
+    networks:
+      - PrviNetwork
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: mauFJcuf5dhRMQrjj
+      MYSQL_DATABASE: classmanagement
+      MYSQL_USER: user
+      MYSQL_PASSWORD: mauFJcuf5dhRMQrjj
+    networks:
+      - PrviNetwork
+
+volumes:
+  postgres-data:
+  cloudbeaver-data:
+  mysql-data:
+
+networks:
+  PrviNetwork:
+    external: true
