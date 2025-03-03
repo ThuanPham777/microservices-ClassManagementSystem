@@ -9,6 +9,14 @@ const gradeService = {
   async addGrade(IdClass, gradeData) {
     return await gradeModel.addGrade(IdClass, gradeData);
   },
+
+  async updateGradeScoreOfStudentInClass(IdClass, IdUser, score) {
+    return await gradeModel.updateGradeScoreOfStudentInClass(
+      IdClass,
+      IdUser,
+      score
+    );
+  },
 };
 
 module.exports = gradeService;

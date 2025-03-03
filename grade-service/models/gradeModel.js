@@ -22,6 +22,15 @@ const gradeModel = {
     );
     return result.rows;
   },
+
+  // cập nhật lại các cột điểm của student trong một class
+  updateGradeScoreOfStudentInClass: async (idClass, IdUser, Score) => {
+    const result = await pool.query(
+      'UPDATE Grade SET score = $1, iduser = $2, updated_at = CURRENT_TIMESTAMP WHERE idclass = $3',
+      [Score, IdUser, idClass]
+    );
+    return result.rows;
+  },
 };
 
 module.exports = gradeModel;
