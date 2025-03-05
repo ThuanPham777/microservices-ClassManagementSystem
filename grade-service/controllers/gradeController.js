@@ -1,25 +1,86 @@
 const gradeService = require('../services/gradeService');
 
 const gradeControllers = {
-  getAllGradesOfSingleClassByTeacher: async (req, res) => {
+  getStudentGradesOfSingleClass: async (req, res) => {
     try {
       const { IdClass } = req.params;
-      const grades = await gradeService.getAllGradesOfSingleClassByTeacher(
+      const studentGrades = await gradeService.getStudentGradesOfSingleClass(
         IdClass
       );
-      res.status(200).json(grades);
+      res.status(200).json(studentGrades);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
+  getGradeStructuresOfSingleClass: async (req, res) => {
+    try {
+      const { IdClass } = req.params;
+      const gradeStructures =
+        await gradeService.getGradeStructuresOfSingleClass(IdClass);
+      res.status(200).json(gradeStructures);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
 
-  addGrade: async (req, res) => {
+  addGradeStructure: async (req, res) => {
     try {
       const { IdClass } = req.params;
-      const newGradeId = await gradeService.addGrade(IdClass, req.body);
+      await gradeService.addGradeStructure(IdClass, req.body);
       res.status(201).json({
-        message: 'Grade added successfully',
+        message: 'Grade Structure added successfully',
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
+
+  updateGradeStructure: async (req, res) => {
+    try {
+      const { IdGradeStructure, IdClass } = req.params;
+      //console.log('Grade structure: ', IdGradeStructure, ' class: ', IdClass);
+      await gradeService.updateGradeStructre(
+        IdGradeStructure,
+        IdClass,
+        req.body
+      );
+      res.status(200).json({
+        success: true,
+        message: 'Grade Structure updated successfully',
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
+
+  deleteGradeStructure: async (req, res) => {
+    try {
+      const { IdGradeStructure, IdClass } = req.params;
+      await gradeService.deleteGradeStructure(IdGradeStructure, IdClass);
+      res.status(200).json({ message: 'Grade Structure deleted successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
+
+  addGradeScoreOfStudentInClass: async (req, res) => {
+    try {
+      const { IdClass, IdGradeStructure, IdUser } = req.params;
+      const { score } = req.body;
+      //console.log('score: ' + score);
+      await gradeService.addGradeScoreOfStudentInClass(
+        IdGradeStructure,
+        IdClass,
+        IdUser,
+        score
+      );
+      res.status(201).json({
+        message: 'Grade score added successfully',
       });
     } catch (error) {
       console.error(error);
@@ -29,19 +90,18 @@ const gradeControllers = {
 
   updateGradeScoreOfStudentInClass: async (req, res) => {
     try {
-      const IdStudent = 1; // set hard data
-      const { IdClass } = req.params;
+      const { IdClass, IdGradeStructure, IdUser } = req.params;
       const { score } = req.body;
       //console.log('score: ' + score);
-      const newGradeScoreId =
-        await gradeService.updateGradeScoreOfStudentInClass(
-          IdClass,
-          IdStudent,
-          score
-        );
-      res.status(201).json({
-        message: 'Grade score added successfully',
-        gradeScoreId: newGradeScoreId,
+      await gradeService.updateGradeScoreOfStudentInClass(
+        IdGradeStructure,
+        IdClass,
+        IdUser,
+        score
+      );
+      res.status(200).json({
+        success: true,
+        message: 'Grade score updated successfully',
       });
     } catch (error) {
       console.error(error);

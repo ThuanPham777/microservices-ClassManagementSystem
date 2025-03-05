@@ -2,66 +2,100 @@ const gradeModel = require('../models/gradeModel');
 const redisClient = require('../config/redis');
 
 const gradeService = {
-  async getGradeListByUserId(userId){
-    const cacheKey = `grades_list_${userId}`;
-
-    try {
-      const cachedData = await redisClient.get(cacheKey);
-      if (cachedData) {
-        console.log('Data found in cache!');
-        return JSON.parse(cachedData);
-      }
-
-      console.log('Data not found in cache. Querying from database...');
-      const grades = await gradeModel.getGradeListByUserId(userId);
-
-      await redisClient.set(cacheKey, JSON.stringify(grades), 'EX', 3600);
-      console.log('Data saved to cache!');
-
-      return grades;
-    } catch (error) {
-      console.error('Error in getAllGradesOfSingleClassByTeacher:', error);
-      throw error;
+  async getStudentGradesOfSingleClass(classId) {
+    const cacheKey = `student_grades_class_${classId}`;
+    const studentGrades = await redisClient.get(cacheKey);
+    if (studentGrades) {
+      return JSON.parse(studentGrades);
     }
+    const studentGradesFromDb = await gradeModel.getStudentGradesOfSingleClass(
+      classId
+    );
+    await redisClient.set(
+      cacheKey,
+      JSON.stringify(studentGradesFromDb),
+      'EX',
+      3600
+    );
+    return studentGradesFromDb;
   },
-  async getAllGradesOfSingleClassByTeacher(IdClass) {
-    const cacheKey = `grades_class_${IdClass}`;
-
-    try {
-      const cachedData = await redisClient.get(cacheKey);
-      if (cachedData) {
-        console.log('Data found in cache!');
-        return JSON.parse(cachedData);
-      }
-
-      console.log('Data not found in cache. Querying from database...');
-      const grades = await gradeModel.getAllGradesOfSingleClassByTeacher(IdClass);
-
-      await redisClient.set(cacheKey, JSON.stringify(grades), 'EX', 3600);
-      console.log('Data saved to cache!');
-
-      return grades;
-    } catch (error) {
-      console.error('Error in getAllGradesOfSingleClassByTeacher:', error);
-      throw error;
-    }
+  async getGradeStructuresOfSingleClass(classId) {
+    const cacheKey = `grade_structure_class_${classId}`;
+    const gradeStructures = await gradeModel.getGradeStructuresOfSingleClass(
+      classId
+    );
+    await redisClient.set(
+      cacheKey,
+      JSON.stringify(gradeStructures),
+      'EX',
+      3600
+    );
+    return gradeStructures;
   },
 
-  async addGrade(IdClass, gradeData) {
+  async addGradeStructure(IdClass, gradeStructureData) {
     try {
-      const newGradeId = await gradeModel.addGrade(IdClass, gradeData);
-      await redisClient.del(`grades_class_${IdClass}`);
-      console.log(`Cache invalidated for grades_class_${IdClass}`);
+      const newGradeStructureId = await gradeModel.addGradeStructure(
+        IdClass,
+        gradeStructureData
+      );
+      await redisClient.del(`grade_structure_class_${IdClass}`);
+      console.log(`Cache invalidated for grade_structure_class_${IdClass}`);
 
-      return newGradeId;
+      return newGradeStructureId;
     } catch (error) {
       console.error('Error in addGrade:', error);
       throw error;
     }
   },
 
-  async updateGradeScoreOfStudentInClass(IdClass, IdUser, score) {
-    return await gradeModel.updateGradeScoreOfStudentInClass(
+  async updateGradeStructre(IdGradeStructure, IdClass, gradeStructureData) {
+    try {
+      await gradeModel.updateGradeStructure(
+        IdGradeStructure,
+        IdClass,
+        gradeStructureData
+      );
+      await redisClient.del(`grade_structure_class_${IdClass}`);
+      console.log(`Cache invalidated for grade_structure_class_${IdClass}`);
+    } catch (error) {
+      console.error('Error in updateGradeStructure:', error);
+      throw error;
+    }
+  },
+
+  async deleteGradeStructure(IdGrade, IdClass) {
+    try {
+      await gradeModel.deleteGradeStructure(IdGrade, IdClass);
+      await redisClient.del(`grade_structure_class_${IdClass}`);
+      console.log(`Cache invalidated for grade_structure_class_${IdClass}`);
+    } catch (error) {
+      console.error('Error in deleteGradeStructure:', error);
+      throw error;
+    }
+  },
+
+  async addGradeScoreOfStudentInClass(
+    IdGradeStructure,
+    IdClass,
+    IdUser,
+    score
+  ) {
+    return await gradeModel.addGradeScoreOfStudentInClass(
+      IdGradeStructure,
+      IdClass,
+      IdUser,
+      score
+    );
+  },
+  async updateGradeScoreOfStudentInClass(
+    IdGradeStructure,
+    IdClass,
+    IdUser,
+    score
+  ) {
+    return await gradeModel.addGradeScoreOfStudentInClass(
+      IdGradeStructure,
       IdClass,
       IdUser,
       score
