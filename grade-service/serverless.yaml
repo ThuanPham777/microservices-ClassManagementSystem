@@ -9,19 +9,34 @@ provider:
       Fn::ImportValue: shared-api-gateway-id
     restApiRootResourceId:
       Fn::ImportValue: shared-api-gateway-root-resource-id
+    cors:
+      origins: "*"
+      headers:
+        - Content-Type
+        - Authorization
+        - X-Amz-Date
+        - X-Api-Key
+        - X-Amz-Security-Token
+      methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      allowCredentials: false 
 
 functions:
   grade:
     handler: grade.handler
-    events:
-      - http:
-          path: grades/{proxy+}  # Chỉ định path là `grades/{proxy+}`
-          method: any
-          integration: lambda-proxy
-      - http:
-          path: /grades
-          method: any
-          integration: lambda-proxy
+    # events:
+    #   - http:
+    #       path: grades/{proxy+}  # Chỉ định path là `grades/{proxy+}`
+    #       method: any
+    #       integration: lambda-proxy
+    #   - http:
+    #       path: /grades
+    #       method: any
+    #       integration: lambda-proxy
       
 
 resources:

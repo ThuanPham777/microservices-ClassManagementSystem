@@ -1,6 +1,18 @@
 const pool = require('../config/db');
 
 const gradeModel = {
+  getGradeListByUserId: async (userId) => {
+    try {
+      const result = await pool.query(
+        'SELECT * FROM Grade WHERE IdUser = $1',
+        [userId]
+      );
+      return result.rows;
+    } catch (error) {
+      console.error('Error fetching grades:', error);
+      throw error;
+    }
+  },
   getAllGradesOfSingleClassByTeacher: async (IdClass) => {
     try {
       const result = await pool.query(
