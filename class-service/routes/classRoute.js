@@ -2,10 +2,12 @@ const express = require('express');
 const router = express.Router();
 const classController = require('../controllers/classController');
 
-router.get('/', classController.getClassListByUserId);
+router.get('/:IdUser', classController.getClassListByUserId);
 router.get('/:IdClass', classController.getClassById);
 
-router.post('/create', classController.createClass);
+
+
+router.post('/create/:IdUser', classController.createClass);
 
 router.put('/:IdClass/update', classController.updateClass);
 

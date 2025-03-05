@@ -11,6 +11,21 @@ provider:
       Fn::GetAtt:
         - ApiGatewayRestApi
         - RootResourceId
+    cors:
+      origins: "*"
+      headers:
+        - Content-Type
+        - Authorization
+        - X-Amz-Date
+        - X-Api-Key
+        - X-Amz-Security-Token
+      methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      allowCredentials: false 
 
 functions:
   class:
@@ -48,3 +63,40 @@ resources:
 
 plugins:
   - serverless-offline
+
+# service: class-services
+
+# provider:
+#   name: aws
+#   runtime: nodejs18.x
+#   region: ap-southeast-1
+#   apiGateway:
+#     restApiId:
+#       Fn::ImportValue: shared-api-gateway-id
+#     restApiRootResourceId:
+#       Fn::ImportValue: shared-api-gateway-root-resource-id
+
+# functions:
+#   grade:
+#     handler: class.handler
+#     # events:
+#     #   - http:
+#     #       path: grades/{proxy+}  # Chỉ định path là `grades/{proxy+}`
+#     #       method: any
+#     #       integration: lambda-proxy
+#     #   - http:
+#     #       path: /grades
+#     #       method: any
+#     #       integration: lambda-proxy
+      
+
+# resources:
+#   Resources:
+#     ApiGatewayResourceGrades:
+#       Type: AWS::ApiGateway::Resource
+#       Properties:
+#         RestApiId:
+#           Fn::ImportValue: shared-api-gateway-id
+#         ParentId:
+#           Fn::ImportValue: shared-api-gateway-root-resource-id
+#         PathPart: grades  # Tạo resource `grades` dưới root resource

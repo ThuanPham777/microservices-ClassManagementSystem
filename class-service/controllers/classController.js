@@ -5,8 +5,8 @@ const classService = require('../services/classService');
 const classController = {
   getClassListByUserId: async (req, res) => {
     try {
-      const userId = 'U001';
-      const classes = await classService.getClassListByUserId(userId);
+      const {IdUser} = req.params;
+      const classes = await classService.getClassListByUserId(IdUser);
       res.status(200).json(classes);
     } catch (error) {
       console.error(error);
@@ -33,9 +33,9 @@ const classController = {
   createClass: async (req, res) => {
     try {
       const newClass = req.body;
-      const userId = 'TEST_USER_ID'; // replace with actual user ID when implementing user authentication
-      console.log('newClass: ' + newClass);
-      const createdClass = await classService.createClass(userId, newClass);
+      const {IdUser} = req.params
+      console.log('IdUser: ' + IdUser);
+      const createdClass = await classService.createClass(IdUser , newClass);
       res.status(201).json({
         message: 'Class created successfully',
         class: createdClass,
