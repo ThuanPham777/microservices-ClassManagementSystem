@@ -2,8 +2,10 @@ const redis = require('redis');
 require('dotenv').config();
 
 const redisClient = redis.createClient({
+  socket : {
     host: process.env.CACHE_ENDPOINT,
     port: 6379,
+  }
 });
 redisClient.on('error', (err) => {
   console.error('Redis error:', err);
