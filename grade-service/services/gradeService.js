@@ -1,13 +1,41 @@
 const gradeModel = require('../models/gradeModel');
+const redisClient = require('../config/redis');
 
 const gradeService = {
-  // Method to get all grades
   async getAllGradesOfSingleClassByTeacher(IdClass) {
-    return await gradeModel.getAllGradesOfSingleClassByTeacher(IdClass);
+    const cacheKey = `grades_class_${IdClass}`;
+
+    try {
+      const cachedData = await redisClient.get(cacheKey);
+      if (cachedData) {
+        console.log('Data found in cache!');
+        return JSON.parse(cachedData);
+      }
+
+      console.log('Data not found in cache. Querying from database...');
+      const grades = await gradeModel.getAllGradesOfSingleClassByTeacher(IdClass);
+
+      await redisClient.set(cacheKey, JSON.stringify(grades), 'EX', 3600);
+      console.log('Data saved to cache!');
+
+      return grades;
+    } catch (error) {
+      console.error('Error in getAllGradesOfSingleClassByTeacher:', error);
+      throw error;
+    }
   },
 
   async addGrade(IdClass, gradeData) {
-    return await gradeModel.addGrade(IdClass, gradeData);
+    try {
+      const newGradeId = await gradeModel.addGrade(IdClass, gradeData);
+      await redisClient.del(`grades_class_${IdClass}`);
+      console.log(`Cache invalidated for grades_class_${IdClass}`);
+
+      return newGradeId;
+    } catch (error) {
+      console.error('Error in addGrade:', error);
+      throw error;
+    }
   },
 };
 

@@ -9,6 +9,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/grades', gradeRoutes);
+app.use('/grades', gradeRoutes);
 
 module.exports = app;
