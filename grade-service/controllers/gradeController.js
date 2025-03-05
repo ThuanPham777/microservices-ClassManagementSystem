@@ -20,7 +20,28 @@ const gradeControllers = {
       const newGradeId = await gradeService.addGrade(IdClass, req.body);
       res.status(201).json({
         message: 'Grade added successfully',
-        gradeId: newGradeId,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
+
+  updateGradeScoreOfStudentInClass: async (req, res) => {
+    try {
+      const IdStudent = 1; // set hard data
+      const { IdClass } = req.params;
+      const { score } = req.body;
+      //console.log('score: ' + score);
+      const newGradeScoreId =
+        await gradeService.updateGradeScoreOfStudentInClass(
+          IdClass,
+          IdStudent,
+          score
+        );
+      res.status(201).json({
+        message: 'Grade score added successfully',
+        gradeScoreId: newGradeScoreId,
       });
     } catch (error) {
       console.error(error);

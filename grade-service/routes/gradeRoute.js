@@ -11,4 +11,9 @@ router.get(
 
 router.post('/class/:IdClass/grade/add', gradeController.addGrade);
 
+router.post(
+  '/class/:IdClass/score/update',
+  gradeController.updateGradeScoreOfStudentInClass
+);
+
 module.exports = router;

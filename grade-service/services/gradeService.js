@@ -37,6 +37,14 @@ const gradeService = {
       throw error;
     }
   },
+
+  async updateGradeScoreOfStudentInClass(IdClass, IdUser, score) {
+    return await gradeModel.updateGradeScoreOfStudentInClass(
+      IdClass,
+      IdUser,
+      score
+    );
+  },
 };
 
 module.exports = gradeService;
