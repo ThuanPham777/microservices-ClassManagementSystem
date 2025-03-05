@@ -2,15 +2,15 @@ const classModel = require('../models/classModel');
 const redisClient = require('../config/redis');
 
 const classService = {
-  async getAllClasses() {
-    const cacheKey = 'all_classes';
+  async getClassListByUserId(userId) {
+    const cacheKey = `classes_by_user_${userId}`;
     const cachedData = await redisClient.get(cacheKey);
     if (cachedData) {
       console.log('Data found in cache!');
       return JSON.parse(cachedData);
     }
     console.log('Data not found in cache. Querying from database...');
-    const classes = await classModel.getAllClasses();
+    const classes = await classModel.getClassListByUserId(userId);
     await redisClient.set(cacheKey, JSON.stringify(classes), 'EX', 3600);
     console.log('Data saved to cache!');
     return classes;

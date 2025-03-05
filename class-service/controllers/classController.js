@@ -3,15 +3,17 @@
 const classService = require('../services/classService');
 
 const classController = {
-  getAllClasses: async (req, res) => {
+  getClassListByUserId: async (req, res) => {
     try {
-      const classes = await classService.getAllClasses();
+      const userId = 'U001';
+      const classes = await classService.getClassListByUserId(userId);
       res.status(200).json(classes);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
+
   getClassById: async (req, res) => {
     try {
       const { IdClass } = req.params;

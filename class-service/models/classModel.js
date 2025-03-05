@@ -2,8 +2,14 @@
 const pool = require('../config/db');
 
 const classModel = {
-  getAllClasses: async () => {
-    const [rows] = await pool.query('SELECT * FROM Class');
+  getClassListByUserId: async (userId) => {
+    const [rows] = await pool.query(
+      `SELECT Class.*
+       FROM Class
+       JOIN ClassUser ON Class.IdClass = ClassUser.IdClass
+       WHERE ClassUser.IdUser = ?`,
+      [userId]
+    );
     return rows;
   },
 
