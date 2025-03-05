@@ -33,8 +33,9 @@ const classController = {
   createClass: async (req, res) => {
     try {
       const newClass = req.body;
+      const userId = 'TEST_USER_ID'; // replace with actual user ID when implementing user authentication
       console.log('newClass: ' + newClass);
-      const createdClass = await classService.createClass(newClass);
+      const createdClass = await classService.createClass(userId, newClass);
       res.status(201).json({
         message: 'Class created successfully',
         class: createdClass,

@@ -1,5 +1,6 @@
 //Class model with database queries
 const pool = require('../config/db');
+const { v4: uuidv4 } = require('uuid');
 
 const classModel = {
   getClassListByUserId: async (userId) => {
@@ -20,13 +21,22 @@ const classModel = {
     return row;
   },
 
-  createClass: async (classData) => {
-    const { IdClass, name, description } = classData;
+  createClass: async (userId, classData) => {
+    const { name, description } = classData;
+    const IdClass = uuidv4();
     const [result] = await pool.query(
       'INSERT INTO Class (IdClass, name, description) VALUES (?, ?, ?)',
       [IdClass, name, description]
     );
-    return result.insertId;
+
+    // Insert ClassUser record
+    const IdClassUser = uuidv4();
+    await pool.query(
+      'INSERT INTO ClassUser (IdClassUser, IdUser, IdClass) VALUES (?, ?, ?)',
+      [IdClassUser, userId, IdClass]
+    );
+
+    return IdClass;
   },
 
   updateClass: async (IdClass, updatedClass) => {

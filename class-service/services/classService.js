@@ -37,8 +37,9 @@ const classService = {
     return classData;
   },
 
-  async createClass(newClass) {
-    const createdClass = await classModel.createClass(newClass);
+  async createClass(userId, newClass) {
+    const createdClass = await classModel.createClass(userId, newClass);
+
     await redisClient.del('all_classes');
     console.log('Cache invalidated for all_classes');
 
