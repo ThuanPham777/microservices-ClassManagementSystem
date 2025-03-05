@@ -8,5 +8,5 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/classes', classRoutes);
+app.use('/classes', classRoutes);
 module.exports = app;

@@ -15,10 +15,10 @@ const classModel = {
   },
 
   createClass: async (classData) => {
-    const { IdUser, name, description } = classData;
+    const { IdClass, name, description } = classData;
     const [result] = await pool.query(
-      'INSERT INTO Class (IdUser, name, description) VALUES (?, ?, ?)',
-      [IdUser, name, description]
+      'INSERT INTO Class (IdClass, name, description) VALUES (?, ?, ?)',
+      [IdClass, name, description]
     );
     return result.insertId;
   },

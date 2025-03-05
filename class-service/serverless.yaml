@@ -1,0 +1,50 @@
+service: class-services
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-southeast-1
+  apiGateway:
+    restApiId:
+      Ref: ApiGatewayRestApi
+    restApiRootResourceId:
+      Fn::GetAtt:
+        - ApiGatewayRestApi
+        - RootResourceId
+
+functions:
+  class:
+    handler: class.handler
+    events:
+      - http:
+          path: /classes/{proxy+}
+          method: any
+          integration: lambda-proxy
+      - http:
+          path: /classes
+          method: any
+          integration: lambda-proxy
+          
+
+resources:
+  Resources:
+    ApiGatewayRestApi:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: shared-api-gateway
+  Outputs:
+    ApiGatewayRestApiId:
+      Value:
+        Ref: ApiGatewayRestApi
+      Export:
+        Name: shared-api-gateway-id
+    ApiGatewayRestApiRootResourceId:
+      Value:
+        Fn::GetAtt:
+          - ApiGatewayRestApi
+          - RootResourceId
+      Export:
+        Name: shared-api-gateway-root-resource-id
+
+plugins:
+  - serverless-offline

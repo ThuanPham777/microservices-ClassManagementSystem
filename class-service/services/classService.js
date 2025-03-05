@@ -1,26 +1,65 @@
-// Handles business logic:
 const classModel = require('../models/classModel');
+const redisClient = require('../config/redis');
 
 const classService = {
-  // Method to get all classes
   async getAllClasses() {
-    return await classModel.getAllClasses();
+    const cacheKey = 'all_classes';
+    const cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      console.log('Data found in cache!');
+      return JSON.parse(cachedData);
+    }
+    console.log('Data not found in cache. Querying from database...');
+    const classes = await classModel.getAllClasses();
+    await redisClient.set(cacheKey, JSON.stringify(classes), 'EX', 3600);
+    console.log('Data saved to cache!');
+    return classes;
   },
 
   async getClassById(IdClass) {
-    return await classModel.getClassById(IdClass);
+    const cacheKey = `class_${IdClass}`;
+    const cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      console.log('Data found in cache!');
+      return JSON.parse(cachedData);
+    }
+    console.log('Data not found in cache. Querying from database...');
+    const classData = await classModel.getClassById(IdClass);
+
+    if (classData) {
+      await redisClient.set(cacheKey, JSON.stringify(classData), 'EX', 3600);
+      console.log('Data saved to cache!');
+    }
+
+    return classData;
   },
 
   async createClass(newClass) {
-    return await classModel.createClass(newClass);
+    const createdClass = await classModel.createClass(newClass);
+    await redisClient.del('all_classes');
+    console.log('Cache invalidated for all_classes');
+
+    return createdClass;
   },
 
   async updateClass(IdClass, updatedClass) {
-    return await classModel.updateClass(IdClass, updatedClass);
+    const result = await classModel.updateClass(IdClass, updatedClass);
+
+    await redisClient.del(`class_${IdClass}`);
+    await redisClient.del('all_classes');
+    console.log(`Cache invalidated for class_${IdClass} and all_classes`);
+
+    return result;
   },
 
   async deleteClass(IdClass) {
-    return await classModel.deleteClass(IdClass);
+    const result = await classModel.deleteClass(IdClass);
+
+    await redisClient.del(`class_${IdClass}`);
+    await redisClient.del('all_classes');
+    console.log(`Cache invalidated for class_${IdClass} and all_classes`);
+
+    return result;
   },
 };
 

@@ -1,4 +1,5 @@
 const mysql = require('mysql2/promise');
+const redis = require('redis');
 require('dotenv').config();
 
 const pool = mysql.createPool({
